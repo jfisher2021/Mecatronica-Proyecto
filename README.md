@@ -1,4 +1,3 @@
 # Mecatronica-Proyecto
 
-
-tamo activau
+This is the repository of the project for Mecatronic subject.
