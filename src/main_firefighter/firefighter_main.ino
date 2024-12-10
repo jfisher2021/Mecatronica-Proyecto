@@ -1,3 +1,6 @@
+
+
+
 // Pines del receptor
 int receiverPins[3] = {3, 5, 6}; // Pines conectados a los canales del receptor (Dirección, Throttle, Switches)
 
@@ -12,6 +15,15 @@ const int IN4 = A3;    // Dirección Motor B
 
 const int PUMP_PIN = 8; // Pin para la bomba
 
+// Pines para LEDs y buzzer
+const int RED_LED = 7;  // Pin para LED rojo
+const int BLUE_LED = 9; // Pin para LED azul
+const int BUZZER = 12;  // Pin para el buzzer
+
+unsigned long previousMillis = 0; // Variable para temporizador
+const long interval = 500; // Intervalo de parpadeo (500ms)
+bool ledState = false; // Estado actual de los LEDs
+
 void setup() {
   Serial.begin(9600);
 
@@ -25,6 +37,16 @@ void setup() {
 
   pinMode(PUMP_PIN, OUTPUT); // Configurar pin de la bomba como salida
   digitalWrite(PUMP_PIN, LOW); // Asegurarse de que la bomba esté apagada al inicio
+
+    // Configurar pines para LEDs y buzzer como salida
+  pinMode(RED_LED, OUTPUT);
+  pinMode(BLUE_LED, OUTPUT);
+  pinMode(BUZZER, OUTPUT);
+
+  // Apagar LEDs y buzzer al inicio
+  digitalWrite(RED_LED, LOW);
+  digitalWrite(BLUE_LED, LOW);
+  digitalWrite(BUZZER, LOW);
 }
 
 void loop() {
@@ -105,6 +127,22 @@ void loop() {
     digitalWrite(PUMP_PIN, HIGH); // Activar bomba
   } else {
     digitalWrite(PUMP_PIN, LOW); // Apagar bomba
+  }
+
+    // Controlar LEDs y buzzer
+  if (rightMotorSpeed < 50 && leftMotorSpeed < 50 && !pumpActive){
+    unsigned long currentMillis = millis();
+    if (currentMillis - previousMillis >= interval) {
+      previousMillis = currentMillis;
+      ledState = !ledState; // Cambiar estado de los LEDs
+  
+      // Alternar LEDs
+      digitalWrite(RED_LED, ledState);
+      digitalWrite(BLUE_LED, !ledState);
+  
+      // Generar sonido de sirena en el buzzer
+      tone(BUZZER, ledState ? 1000 : 500, 500); // Alternar entre 1000Hz y 500Hz cada medio segundo
+    }
   }
 
   // Debug para monitorear valores
